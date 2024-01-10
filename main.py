@@ -7,6 +7,7 @@ import time
 from truss import Truss
 from genetics import Genome
 from joblib import Parallel, delayed
+from pathlib import Path
 
 
 def map(x, old_min, old_max, new_min, new_max):
@@ -76,6 +77,10 @@ canvas_truss_cols = 10
 # margin between truss visuals, px
 cell_margins = 20
 
+# creating truss_checkpoints folder
+Path("truss_checkpoints").mkdir(parents=True, exist_ok=True)
+
+# evolution parameters
 batch_size = 100
 cut_limit = batch_size // 2
 
@@ -112,9 +117,12 @@ while True:
     rate = 0.5
 
     print(f"fit: {cur_fitness}, rate:{rate}")
-    with open("truss_checkpoints/" + str(time.time()) + " " + str(cur_fitness) + ".truss", 'wb+') as f:
-        pickle.dump(pool[0], f)
-    
+    try:
+        with open("truss_checkpoints/" + str(time.time()) + " " + str(cur_fitness) + ".truss", 'wb+') as f:
+            pickle.dump(pool[0], f)
+    except:
+        print("Could not write truss checkpoint. Check directory permissions.")
+
     # Drawing trusses
     for r in range(canvas_truss_rows):
         for c in range(canvas_truss_cols):
