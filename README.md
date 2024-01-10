@@ -5,7 +5,9 @@ This is a project was built as part of a university assignment to design a truss
 To use this program, first ensure you have all the dependencies installed via pip. Then, simply run main.py to generate a pool and view the results of training. The top performer of each generation of trusses will be saved in the truss_checkpoints directory as a pickled python object of the Truss class (available in truss.py).
 
 # Screenshots
-todo
+[image](https://github.com/owen-grimm/truss-genetic-optimizer/assets/12762677/dce6d70f-acb7-441b-a7ce-06e1f43d56d2)
+![image](https://github.com/owen-grimm/truss-genetic-optimizer/assets/12762677/c6e39f9e-90ba-4ad5-a53b-dab3523155b4)
+![image](https://github.com/owen-grimm/truss-genetic-optimizer/assets/12762677/e8369a0e-13b6-4b37-aac3-dabe6d19cfbb)
 
 # License
 
