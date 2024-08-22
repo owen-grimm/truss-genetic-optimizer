@@ -147,8 +147,8 @@ class Truss:
         resultant_force_vector = np.zeros(dtype=np.float64, shape=(len(self.nodes) * 2))
         reaction_force_component_index = 0
 
-        # Dealing with distributed forces on members
-        for member in self.members:
+        for member_index, member in enumerate(self.members):
+            # Dealing with distributed forces on members
             node_a_offset_ind = 2*node_index_dict[member.connected_node_a]
             node_b_offset_ind = 2*node_index_dict[member.connected_node_b]
 
@@ -163,23 +163,20 @@ class Truss:
             resultant_force_vector[node_b_offset_ind+0] -= force_x_per_joint
             resultant_force_vector[node_b_offset_ind+1] -= force_y_per_joint
 
+            # Adding force coefficients on a member-by-member basis
+            member_length = member.length()
+            member_cos_ab = (member.connected_node_b.x - member.connected_node_a.x) / member_length
+            member_cos_ba = -member_cos_ab
+            member_sin_ab = (member.connected_node_b.y - member.connected_node_a.y) / member_length
+            member_sin_ba = -member_sin_ab
+
+            force_coefficient_matrix[node_a_offset_ind+0, member_index] = member_cos_ab
+            force_coefficient_matrix[node_a_offset_ind+1, member_index] = member_sin_ab
+            force_coefficient_matrix[node_b_offset_ind+0, member_index] = member_cos_ba
+            force_coefficient_matrix[node_b_offset_ind+1, member_index] = member_sin_ba
+
         for node_index, node in enumerate(self.nodes):
             offset_node_index = 2 * node_index
-
-            for member_index, member in enumerate(self.members):
-                if member.connected_node_a is node:
-                    other_node = member.connected_node_b
-                elif member.connected_node_b is node:
-                    other_node = member.connected_node_a
-                else:
-                    continue
-
-                member_length = member.length()
-                member_cos = (other_node.x - node.x) / member_length
-                member_sin = (other_node.y - node.y) / member_length
-
-                force_coefficient_matrix[offset_node_index, member_index] = member_cos
-                force_coefficient_matrix[offset_node_index+1, member_index] = member_sin
 
             # Dealing with support reactions, we don't need to know which one is which so no need to keep track
             match node.support_type:
@@ -226,7 +223,7 @@ class Truss:
             print(
                 "Unable to solve system, over/underconstrained. Numpy error follows: "
             )
-            raise e
+            # raise e
 
     def get_fitness_cost(self):
         cost = 0
